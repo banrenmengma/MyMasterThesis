@@ -1,0 +1,46 @@
+This is BibTeX, Version 0.99d (TeX Live 2015/W32TeX)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: ThesisProposalVer2.aux
+The style file: unsrt.bst
+Database file #1: D:/biblib/science.bib.bib
+You've used 12 entries,
+            1791 wiz_defined-function locations,
+            537 strings with 6008 characters,
+and the built_in function-call counts, 3657 in all, are:
+= -- 335
+> -- 178
+< -- 3
++ -- 64
+- -- 52
+* -- 280
+:= -- 554
+add.period$ -- 37
+call.type$ -- 12
+change.case$ -- 12
+chr.to.int$ -- 0
+cite$ -- 12
+duplicate$ -- 163
+empty$ -- 316
+format.name$ -- 52
+if$ -- 822
+int.to.chr$ -- 0
+int.to.str$ -- 12
+missing$ -- 12
+newline$ -- 63
+num.names$ -- 12
+pop$ -- 24
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 103
+stack$ -- 0
+substring$ -- 289
+swap$ -- 62
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 0
+while$ -- 34
+width$ -- 14
+write$ -- 136

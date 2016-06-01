@@ -1,0 +1,80 @@
+\begin{thebibliography}{10}
+
+\bibitem{LiBohu2010}
+李伯虎, 张霖, 王时龙, 陶飞, 曹军威, 姜晓丹, 宋晓, and
+  柴旭东.
+\newblock 云制造——面向服务的网络化制造新模式.
+\newblock {\em 计算机集成制造系统}, 16(01):0--0, 2010.
+
+\bibitem{Xu2012}
+Xun Xu.
+\newblock From cloud computing to cloud manufacturing.
+\newblock {\em Robotics and Computer-Integrated Manufacturing}, 28(1):75--86,
+  February 2012.
+
+\bibitem{Tao2011}
+F~Tao, L~Zhang, VC~Venkatesh, Y~Luo, and Y~Cheng.
+\newblock Cloud manufacturing: a computing and service-oriented manufacturing
+  model.
+\newblock {\em Proceedings of the Institution of Mechanical Engineers, Part B:
+  Journal of Engineering Manufacture}, page 0954405411405575, 2011.
+
+\bibitem{Zhang2014}
+Lin Zhang, Yongliang Luo, Fei Tao, Bo~Hu Li, Lei Ren, Xuesong Zhang, Hua Guo,
+  Ying Cheng, Anrui Hu, and Yongkui Liu.
+\newblock Cloud manufacturing: a new manufacturing paradigm.
+\newblock {\em Enterprise Information Systems}, 8(2):167--187, March 2014.
+
+\bibitem{Tao2014}
+Fei Tao, Ying Feng, Lin Zhang, and T.W. Liao.
+\newblock Clps-ga: A case library and pareto solution-based hybrid genetic
+  algorithm for energy-aware cloud service scheduling.
+\newblock {\em Applied Soft Computing}, 19:264--279, June 2014.
+
+\bibitem{Laili2012}
+Yuanjun Laili, Fei Tao, Lin Zhang, and Bhaba~R. Sarker.
+\newblock A study of optimal allocation of computing resources in cloud
+  manufacturing systems.
+\newblock {\em The International Journal of Advanced Manufacturing Technology},
+  63(5):671--690, 2012.
+
+\bibitem{6227791}
+J.~Lartigau, L.~Nie, X.~Xu, D.~Zhan, and T.~Mou.
+\newblock Scheduling methodology for production services in cloud
+  manufacturing.
+\newblock In {\em Service Sciences (IJCSS), 2012 International Joint Conference
+  on}, pages 34--39, May 2012.
+
+\bibitem{6376181}
+F.~Tao, Y.~LaiLi, L.~Xu, and L.~Zhang.
+\newblock Fc-paco-rm: A parallel method for service composition
+  optimal-selection in cloud manufacturing system.
+\newblock {\em IEEE Transactions on Industrial Informatics}, 9(4):2023--2033,
+  Nov 2013.
+
+\bibitem{Og2010}
+Ceyda Og, F~Sibel Salman, Zehra~Bilgint{\"u}rk Yal{\c{c}}{\i}n, et~al.
+\newblock Order acceptance and scheduling decisions in make-to-order systems.
+\newblock {\em International Journal of Production Economics}, 125(1):200--211,
+  2010.
+
+\bibitem{Nguyen2015}
+Su~Nguyen, Mengjie Zhang, and Kay~Chen Tan.
+\newblock A dispatching rule based genetic algorithm for order acceptance and
+  scheduling.
+\newblock In {\em Proceedings of the 2015 Annual Conference on Genetic and
+  Evolutionary Computation}, pages 433--440, Madrid, Spain, 2015. ACM.
+
+\bibitem{Wang2013}
+Xiuli Wang, Xingzi Xie, and TCE Cheng.
+\newblock Order acceptance and scheduling in a two-machine flowshop.
+\newblock {\em International Journal of Production Economics}, 141(1):366--376,
+  2013.
+
+\bibitem{Qi2011}
+Xiangtong Qi.
+\newblock Outsourcing and production scheduling for a two-stage flow shop.
+\newblock {\em International Journal of Production Economics}, 129(1):43 -- 50,
+  2011.
+
+\end{thebibliography}

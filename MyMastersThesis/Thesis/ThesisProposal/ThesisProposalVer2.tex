@@ -1,0 +1,75 @@
+\documentclass[UTF8]{ctexart}
+\usepackage{geometry}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\usepackage[raggedright]{titlesec}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[colorlinks, linkcolor = blue]{hyperref}
+\usepackage[nameinlink, capitalize]{cleveref}
+\usepackage{cite}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{fourier}
+\allowdisplaybreaks[4]
+
+\title{云制造中的资源服务组合优化问题研究}
+
+\begin{document}
+\maketitle
+\section{课题背景及研究意义}
+\label{background}
+本文的研究来源于云制造二期项目关于“集团企业云制造平台关键技术研究应用”的相关研究要求。该项目主要研究内容包括集团企业应用模式研究，资源服务组合优化调度及集团企业云制造服务平台研发等。云制造作为一种网络化制造的新模式，其概念、构成、关键技术、运营模式等都已得到了广泛的研究。根据课题及实际生产制造的需求，本文选取云制造环境作为研究背景，旨在研究如何优化云制造平台上众多资源服务的组合，进而提高整个云制造系统的运作效率。
+
+资源服务组合优化问题作为云制造二期项目的其中一个主要研究内容，有其重要的研究意义和复杂性。这里就其研究意义进行具体阐述：
+\begin{enumerate}[(i)]
+\item 在云制造运营模式下，资源服务与需求之间本质上是多对多的关系，平台匹配与优化组合的结果通常直接为企业提供决策支持；而企业的决策调度结果反过来又会影响到平台运营，进而影响到整个云制造系统的运作效率。
+\item 云制造从其提出至今已逾六年，关于其概念和意义的研究基本已有定论。而其运营模式的讨论和关键技术的研究目前仍在继续。云制造资源服务组合优化问题作为支撑云制造的其中一项关键技术，将不可避免地成为下一轮研究的重点。
+\item 大系统的组合优化问题通常是具有$\mathcal{NP}$难度的。$\mathcal{NP}$类问题由于其理论意义与求解的困难程度广泛地被各个领域的学者所关注。云制造资源服务组合优化问题作为这类问题的一个典型代表不但能引起研究者的研究兴趣，而且也兼具实际应用价值。
+\end{enumerate}
+
+\section{国内外研究现状}
+\label{present research situation}
+云制造这个概念最早由李伯虎团队\cite{LiBohu2010}于2010年提出。在其论文中，李伯虎团队首先提出了“分散资源集中使用，集中资源分散服务”的云制造思想，并将云制造与应用服务提供商和制造网格进行区分。此外，他们还分析了云制造的体系结构及实现云制造所需的关键技术。
+
+Xu\cite{Xu2012}通过分析云计算的特征，认为云计算将会与传统的制造业相结合从而形成新的企业运营模式。Xu还认为云计算与制造主要有直接将云计算应用于制造系统和云制造这两种结合方式，并列举了一些目前在制造业中已经出现的应用云计算的运营模式的案例。
+
+Tao等\cite{Tao2011}讨论了云制造的概念、构成和典型特征，提出了四种类型的云制造服务平台，并总结了云计算和云制造的关系。
+
+Zhang等\cite{Zhang2014}将云制造视为一种结合了云计算技术、物联网技术和面向服务技术的一种新的制造范式。通过研究其构成、典型特征以及关键技术，他们认为云制造主要由以下三部分组成：云制造资源、制造云服务和制造云。
+
+Tao等\cite{Tao2014}修改并建立了云服务中的计算资源最优化分配(Optimal Scheduling of Computing Resources, OSCR)问题模型，以完工时间和能耗为优化目标，采用混合遗传算法进行求解。
+
+Laili等\cite{Laili2012}针对云制造中计算资源最优化分配(Optimal Allocation of Computing
+Resources, OACR)问题，提出了一种新的利基免疫算法(Niche Immune Algorithm)，并对该问题进行求解。
+
+Lartigau等\cite{6227791}尝试对云制造中的订单任务进行调度。
+
+针对基于企业系统的云制造资源组合优化问题，Tao等\cite{6376181}提出了一种新的并行智能算法并对该问题进行求解。
+
+以云制造环境下单个企业的视角来看，企业面临自主决策是否接受订单并对其进行调度的问题。这类问题被称为订单接受及其调度(Order Acceptance and Scheduling, OAS)问题。Oguz等\cite{Og2010}研究了单机环境下的OAS问题并用启发式算法得到了较为满意的解。
+
+针对单机的OAS问题，Nguyen等\cite{Nguyen2015}采用了基于遗传算法的分派规则进行求解，并取得了一定的效果。
+
+Wang等\cite{Wang2013}研究了两台机器的流水车间环境下的OAS问题，结合分支定界和启发式算法，对于大量随机实例，他们给出了优于CPLEX的求解算法及结果。
+
+在网络化制造大环境下，在制造过程中企业间必然存在着相互协同。Qi\cite{Qi2011}研究了两阶段流水线的制造外包问题，提出了三种外包的形式，并用动态规划进行了求解。
+
+\section{研究内容及问题建模}
+\label{model}
+
+\begin{equation}
+\text{Minimize} \qquad \max\sum_{t=0}^{T_{max}} t\cdot\xi_{it} + p_i
+\end{equation}
+
+
+\begin{align}
+\sum_{t=0}^{T_{max}} \xi_{it} = 1, \qquad & i \in X,\\
+A^T\cdot \left(\sum_{i\in X_i} r_{i1} \sum_{\tau=\sigma(t,i)}^t \xi_{it}, \dots, \sum_{i\in X_i} r_{ik} \sum_{\tau=\sigma(t,i)}^t \xi_{it}\right) \leqslant b, \qquad & i \in X,\\
+\xi_{it} \in \{0, 1\}, \qquad & i\in X;\quad t = 0, \dots, T_{max},
+\end{align}
+
+
+\bibliographystyle{unsrt} 
+\bibliography{D:/biblib/science.bib} 
+\end{document}
