@@ -15,11 +15,29 @@ struct DataSet
 	std::vector<std::vector<int> > prec;
 	std::vector<int> proc_time;
 	std::vector<std::vector<int> > opt_srvcs;
+	std::vector<std::vector<int> > srvcs_requst;
 	const int RsrcNum;
 	const int SrvcNum;
 	std::vector<int> RsrcCpcty;
 	std::vector<int> SrvcCpcty;
 	std::vector<std::vector<int> > CoeMatrix;
+};
+
+struct Interval
+{
+	int start;
+	int end;
+	int height;
+	Interval(): start(0), end(0), height(0) {}
+	Interval(int s, int e, int h): start(s), end(e), height(h) {}	
+};
+
+struct InvalidPos
+{
+	bool valid_flag;
+	int invalid_pos;
+	InvalidPos(): valid_flag(true), invalid_pos(-1) {}
+	InvalidPos(bool v, int i): valid_flag(v), invalid_pos(i) {}
 };
 
 class DataInitialization
@@ -43,13 +61,21 @@ public:
 		std::vector<int> proc_time(arr_proc_time, arr_proc_time + TaskNum);
 
 		std::vector<std::vector<int> > opt_srvcs;
-		int arr_opt_srvcs[] = {0, 0, 2, 3, 1, 4, 3, 4, 0, 0, 0, 0};
+		std::vector<std::vector<int> > srvcs_requst;
+		int arr_opt_srvcs[] = {0, 0, 2, 3, 1, 4, 3, 4, 0, 0, 0};
+		int arr_srvcs_requst[] = {0, 3, 2, 1, 1, 1, 2, 1, 3, 1, 0};
 		int arr_opt_srvcs_count[TaskNum] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 		int opt_srvcs_cum = 0;
 		for (int i = 0; i < TaskNum; ++i) {
 			std::vector<int> vec_opt_srvcs(arr_opt_srvcs + opt_srvcs_cum, arr_opt_srvcs + opt_srvcs_cum + arr_opt_srvcs_count[i]);
 			opt_srvcs.push_back(vec_opt_srvcs);
 			vec_opt_srvcs.clear();
+			
+
+			std::vector<int> vec_srvcs_requst(arr_srvcs_requst + opt_srvcs_cum, arr_srvcs_requst + opt_srvcs_cum + arr_opt_srvcs_count[i]);
+			srvcs_requst.push_back(vec_srvcs_requst);
+			vec_srvcs_requst.clear();
+
 			opt_srvcs_cum += arr_opt_srvcs_count[i];
 		}
 
@@ -79,7 +105,7 @@ public:
 			SrvcCpcty.push_back(temp_max[i]);
 		}
 
-		DataSet AllData = {TaskNum, prec, proc_time, opt_srvcs, RsrcNum, SrvcNum, RsrcCpcty, SrvcCpcty, CoeMatrix};
+		DataSet AllData = {TaskNum, prec, proc_time, opt_srvcs, srvcs_requst, RsrcNum, SrvcNum, RsrcCpcty, SrvcCpcty, CoeMatrix};
 		return AllData;
 	}
 };
@@ -94,7 +120,7 @@ public:
 		std::vector<int> Seq;
 		std::vector<int> Index;
 		srand((unsigned)time(NULL));  
-		for(int i = 0; i < TaskNum - 1; ++i ) {
+		for(int i = 0; i < TaskNum - 1; ++i) {
 			if (i == 0) {
 				Seq.push_back(-1);
 			} else {
@@ -176,20 +202,141 @@ public:
 		std::vector<std::vector<int> > prec = AllData.prec;
 		std::vector<int> proc_time = AllData.proc_time;
 		std::vector<std::vector<int> > opt_srvcs = AllData.opt_srvcs;
+		std::vector<std::vector<int> > srvcs_requst = AllData.srvcs_requst;
 		const int RsrcNum = AllData.RsrcNum;
-		const int SrvcNum = AllData.SrvcNum;
+		// const int SrvcNum = AllData.SrvcNum;
 		std::vector<int> RsrcCpcty = AllData.RsrcCpcty;
 		std::vector<int> SrvcCpcty = AllData.SrvcCpcty;
 		std::vector<std::vector<int> > CoeMatrix = AllData.CoeMatrix;
 
-		
+		int result = 0;
+		map<int, std::vector<Interval> > RsrcCumFunc;
+		map<int, std::vector<Interval> > SrvcCumFunc;
+		map<int, std::vector<Interval> >::iterator it;
+		std::vector<Interval> EmptyItv;
+		map<int, Interval> schd;
+		Interval s_dummy(0, 0, 0);
+		schd.insert(make_pair(0, s_dummy));
+		srand((unsigned)time(NULL));
+		for (int i = 1; i < TaskNum - 1; ++i) {
+			int OpId = OriginalSeq[i];
+			int srvc_index = rand() % opt_srvcs[i].size();
+			int SrvcId = opt_srvcs[OpId][srvc_index];
+			// cout << OpId;
+			int StartTime = 0;
+			for (size_t j = 0;  j < prec[OpId].size(); ++j) {
+				StartTime = max(StartTime, schd[prec[OpId][j]].end);
+			}
+			// int StartTime = schd[i - 1].end();
+			Interval new_itv;
+			std::vector<int> vec_st;
+			for (int j = 0; j < RsrcNum; ++j) {
+				if (CoeMatrix[j][SrvcId] > 0) {
+					it = RsrcCumFunc.find(j);
+					if (it == RsrcCumFunc.end()) {
+						RsrcCumFunc.insert(make_pair(j, EmptyItv));
+					}
+					// if (i == 10) cout << j;
+					new_itv = newItv(StartTime, proc_time[OpId], srvcs_requst[OpId][srvc_index] * CoeMatrix[j][SrvcId], RsrcCpcty[j], RsrcCumFunc[j]);	
+					// if (i == 10) cout << j;
+					vec_st.push_back(new_itv.start);								
+					StartTime = max(StartTime, new_itv.start);	
+				} 
+			}
+
+			// cout << StartTime;
+
+			while (!allEqual(vec_st)) {
+				vec_st.clear();
+				for (int j = 0; j < RsrcNum; ++j) {
+					if (CoeMatrix[j][SrvcId] > 0) {
+						// it = RsrcCumFunc.find(j);
+						// if (it == RsrcCumFunc.end()) {
+						// 	RsrcCumFunc.insert(make_pair(j, EmptyItv));
+						// }
+
+						// int RsrcRequst = srvcs_requst[i][SrvcId] * CoeMatrix[j][SrvcId];
+						new_itv = newItv(StartTime, proc_time[OpId], srvcs_requst[OpId][srvc_index] * CoeMatrix[j][SrvcId], RsrcCpcty[j], RsrcCumFunc[j]);
+						vec_st.push_back(new_itv.start);
+						StartTime = max(StartTime, new_itv.start);
+					} 
+				}
+			}
+
+			for (int j = 0; j < RsrcNum; ++j) {
+				if (CoeMatrix[j][SrvcId] > 0) {
+					// it = RsrcCumFunc.find(j);
+					// if (it == RsrcCumFunc.end()) {
+					// 	RsrcCumFunc.insert(make_pair(j, EmptyItv));
+					// }
+					// int RsrcRequst = srvcs_requst[i][SrvcId] * CoeMatrix[j][SrvcId];
+
+					new_itv = newItv(StartTime, proc_time[OpId], srvcs_requst[OpId][srvc_index] * CoeMatrix[j][SrvcId], RsrcCpcty[j], RsrcCumFunc[j]);
+					itv_insert(RsrcCumFunc[j], new_itv);
+				}
+			}
+
+			Interval itv(StartTime, StartTime + proc_time[OpId], srvcs_requst[OpId][srvc_index]);
+			schd.insert(make_pair(OpId, itv));
+			result = max(result, schd[OpId].end);
+			// cout << result << '\t';
+			
+		}	
+		// Interval e_dummy(schd[TaskNum - 2].end, schd[TaskNum - 2].end + 0, 0);
+		// schd.push_back(e_dummy);
+		// result = schd[TaskNum - 1].end;
+		return result;
 	}
 
 private:
+
+	bool allEqual(std::vector<int> &vec) {
+		if (vec.size() <= 1) {
+			return true;
+		} else {
+			for (size_t i = 1; i < vec.size(); ++i) {
+				if (vec[i] != vec[0]) {
+					return false;
+				} 
+			}
+		}
+		return true;
+	}
+
+	Interval newItv(int StartTime, int ProTime, int RsrcHght, int RsrcLmt, std::vector<Interval> &itvs) {
+		std::vector<Interval> const_itvs = itvs;
+		Interval new_itv(StartTime, StartTime + ProTime, RsrcHght);
+		std::vector<Interval> itvs_temp = itvs;
+		InvalidPos IP = isValidIsert(itvs_temp, new_itv, RsrcLmt);
+
+		while (!IP.valid_flag) {
+			new_itv.start = itvs_temp[IP.invalid_pos].end;
+			new_itv.end = new_itv.start + ProTime;
+			IP = isValidIsert(itvs_temp, new_itv, RsrcLmt);
+		}
+		return new_itv;
+	}
+
+	InvalidPos isValidIsert(std::vector<Interval> &const_itvs, Interval new_itv, int RsrcLmt) {
+		bool valid_flag = true;
+		int invalid_pos = -1;
+		std::vector<Interval> itvs = const_itvs;
+		std::vector<Interval> itvs_temp = itv_insert(itvs, new_itv);
+		for (size_t i = 0; i < itvs_temp.size(); ++i) {
+			if (itvs_temp[i].height > RsrcLmt) {
+				valid_flag = false;
+				invalid_pos = i - 1;
+			}
+		}
+		itvs.clear();
+		InvalidPos IP(valid_flag, invalid_pos);
+		return IP;
+	}
+
 	bool isSubset(std::vector<int>& vec1, std::vector<int>& vec2) {
 		if (vec1.size() == 0) return true;
 		std::vector<int>::iterator it;
-		for (int i = 0; i < vec1.size(); ++i) {
+		for (size_t i = 0; i < vec1.size(); ++i) {
 			it = find(vec2.begin(), vec2.end(), vec1[i]);
 			if (it == vec2.end()) {
 				return false;
@@ -197,22 +344,157 @@ private:
 		}
 		return true;
 	}
+
+	bool isOverLap(Interval itv1, Interval itv2) {
+		if (itv1.start < itv2.end && itv1.end > itv2.start) {
+			return true;
+		} else {
+			return false;
+		}	 
+	}
+
+	std::vector<Interval> itv_insert(std::vector<Interval> &itvs, Interval new_itv) {
+		if (itvs.empty()) {
+			Interval itv_init(0, INT_MAX/2, 0);
+			itvs.push_back(itv_init);
+		}
+		if (new_itv.height == 0) return itvs;
+		// std::vector<Interval>:: iterator it = itvs.begin();
+		std::vector<Interval>:: iterator it_first, it_last;
+		int count = 0;
+		int first_pos;
+		int last_pos;
+		int break_flag = 0;
+		auto it = itvs.begin() + itvs.size() - 1;
+		for (int i = itvs.size() - 1; it >= itvs.begin(); --it, --i) {
+			if (isOverLap(*it, new_itv)) {
+				++count;
+				if (count == 1) {
+					it_last = it;
+					last_pos = i;
+				}
+				it_first = it;
+				first_pos = i;
+				break_flag = i;
+			}
+			if (break_flag > i) break;
+		}
+
+		Interval itv_temp2(new_itv.end, it_last->end, it_last->height);
+
+		Interval itv_temp1(it_first->start, new_itv.start, it_first->height);
+
+		for (auto it = it_last; it >= it_first; --it) {
+			if (it == it_last) {
+				it->start = it_last->start;
+				it->end = new_itv.end;
+			}
+			if (it == it_first) {
+				it->start = new_itv.start;
+				it->end = it_first->end;
+			}
+			it->height += new_itv.height; 
+		}
+
+		itvs.insert(itvs.begin() + last_pos + 1, itv_temp2);
+		itvs.insert(itvs.begin() + first_pos, itv_temp1);
+
+		return itvs;
+	}
+
+	/*
+	std::vector<Interval> itv_true_insert(std::vector<Interval> &itvs, Interval new_itv) {
+		if (itvs.empty()) {
+			Interval itv_init(0, INT_MAX/2, 0);
+			itvs.push_back(itv_init);
+		}
+		if (new_itv.height == 0) return itvs;
+		// std::vector<Interval>:: iterator it = itvs.begin();
+		std::vector<Interval>:: iterator it_first, it_last;
+		int count = 0;
+		int first_pos;
+		int last_pos;
+		int break_flag = 0;
+		auto it = itvs.begin() + itvs.size() - 1;
+		for (int i = itvs.size() - 1; it >= itvs.begin(); --it, --i) {
+			if (isOverLap(*it, new_itv)) {
+				++count;
+				if (count == 1) {
+					it_last = it;
+					last_pos = i;
+				}
+				it_first = it;
+				first_pos = i;
+				break_flag = i;
+			}
+			if (break_flag > i) break;
+		}
+
+		Interval itv_temp2(new_itv.end, it_last->end, it_last->height);
+
+		Interval itv_temp1(it_first->start, new_itv.start, it_first->height);
+
+		for (auto it = it_last; it >= it_first; --it) {
+			if (it == it_last) {
+				it->start = it_last->start;
+				it->end = new_itv.end;
+			}
+			if (it == it_first) {
+				it->start = new_itv.start;
+				it->end = it_first->end;
+			}
+			it->height += new_itv.height; 
+		}
+
+		if (itv_temp2.start == itv_temp2.end) {
+			if (itvs.end() - it_last >= 2) {
+				if ((it_last + 1)->height == it_last->height) {
+					(it_last + 1)->start = it_last->start;
+					itvs.erase(it_last);
+				}
+			}			
+		} else {
+			itvs.insert(itvs.begin() + last_pos + 1, itv_temp2);
+		}
+
+		if (itv_temp1.start == itv_temp1.end) {
+			if (it_first - itvs.begin() >= 1) {
+				if ((it_first - 1)->height == it_first->height) {
+					(it_first - 1)->end = it_first->end;
+					itvs.erase(it_first);
+				}
+			}
+		} else {
+			itvs.insert(itvs.begin() + first_pos, itv_temp1);
+		}
+
+		return itvs;
+	}
+	*/
 };
 
 int main(int argc, char const *argv[])
 {
+	double dur;
+	clock_t s_time, e_time;
+	s_time = clock();
 	DataInitialization di;
 	SeqGeneration sg;
 	SeqDecoding sd;
 	DataSet AllData = di.Initiate();
 	std::vector<int> Org = sg.RandSeq(AllData);
-	for (int i = 0; i < Org.size(); ++i)
+	for (size_t i = 0; i < Org.size(); ++i)
 		cout << Org[i] << '\t';
 	cout << endl;
 	std::vector<int> Lgl = sd.LegalSeq(Org, AllData);
-	for (int i = 0; i < Lgl.size(); ++i)
+	for (size_t i = 0; i < Lgl.size(); ++i)
 		cout << Lgl[i] << '\t';
 	cout << endl;
+	int makespan = sd.makespan(Lgl, AllData);
+	cout << "makespan = " << makespan << endl;
+	e_time = clock();
+	dur = (double)(e_time - s_time);
+    printf("Use Time:%f\n",(dur/CLOCKS_PER_SEC));
 	return 0;
 }
 
