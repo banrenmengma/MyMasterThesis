@@ -90,3 +90,44 @@ public:
 		return AllData;
 	}
 };
+
+// const int GroupNum = rand() % 4 + 2;
+		// std::vector<int> TaskAllocate;
+		// for (int i = 0; i < TaskNum; ++i) {
+		// 	TaskAllocate.push_back(i);
+		// }
+		// random_shuffle(TaskAllocate.begin() + 1, TaskAllocate.end() - 1);
+		// std::vector<int> vec_split;
+		// vec_split.push_back(1);
+		// vec_split.push_back(TaskNum - 1);
+		// for (int i = 0; i < GroupNum - 1; ++i) {
+		// 	int r_n = rand() % (TaskNum - 1) + 1;
+		// 	while (isIn(vec_split, r_n)) {
+		// 		r_n = rand() % (TaskNum - 1) + 1;
+		// 	}
+		// 	vec_split.push_back(r_n);
+		// }
+		// sort(vec_split.begin(), vec_split.end());
+		// std::vector<std::vector<int> > vec_allocate;
+		// for (int i = 0; i < GroupNum; ++i) {
+		// 	std::vector<int> vec(TaskAllocate.begin() + vec_split[i], TaskAllocate.begin() + vec_split[i + 1]);
+		// 	vec_allocate.push_back(vec);
+		// 	vec.clear();
+		// }
+
+		// std::vector<std::vector<int> > prec;
+		// for (int i = 0; i < TaskNum; ++i) {
+		// 	std::vector<int> vec;
+		// 	prec.push_back(vec);
+		// }
+
+		// for (int i = 0; i < GroupNum; ++i) {
+		// 	for (size_t j = 0; j < vec_allocate[i].size(); ++j) {
+		// 		if (j == 0) {
+		// 			prec[vec_allocate[i][j]].push_back(0);
+		// 		} else {
+		// 			prec[vec_allocate[i][j]].push_back(vec_allocate[i][j - 1]);
+		// 		}
+		// 	}
+		// 	prec[TaskNum - 1].push_back(vec_allocate[i][vec_allocate[i].size() - 1]);
+		// }

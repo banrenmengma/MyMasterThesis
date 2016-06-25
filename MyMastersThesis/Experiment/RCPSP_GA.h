@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <limits.h>
-#include "Data.h"
+// #include "Data.h"
+#include "Decoding.h"
 using namespace std;
 
 class RCPSP_GA
@@ -47,10 +48,17 @@ public:
 		return chrom;
 	}
 
-	map<int, std::vector<int> > Objv(DataSet &AllData, std::vector<std::vector<int> > &chrom, int nind) {
-		map<int, std::vector<int> > objective;
+	multimap<int, std::vector<int> > Objv(DataSet &AllData, std::vector<std::vector<int> > &chrom, int nind) {
+		multimap<int, std::vector<int> > objective;
 		// **********
-
+		std::vector<int> lgl_seq;
+		int fit;
+		for (int i = 0; i < nind; ++i) {
+			SeqDecoding sd;
+			lgl_seq = sd.LegalSeq(chrom[i], AllData);
+			fit = sd.makespan(lgl_seq, AllData);
+			objective.insert(make_pair(fit, chrom[i]));
+		}
 		return objective;
 	}
 
@@ -60,41 +68,51 @@ public:
 	// 	return fitnv;
 	// }
 	
-	std::vector<std::vector<int> > Select(std::vector<std::vector<int> > &chrom, map<int, std::vector<int> > fitnv, float ggap) {
+	std::vector<std::vector<int> > Select(std::vector<std::vector<int> > &chrom, multimap<int, std::vector<int> > &fitnv, float ggap) {
 		std::vector<std::vector<int> > selch;
 		// srand((unsigned)time(NULL));
 		std::vector<double> wheel;
 		double prob;
 		int obj_sum = 0;
 		double r_n;
-		for (map<int, std::vector<int> >::iterator it = fitnv.begin(); it != fitnv.end(); ++it) 
+		for (multimap<int, std::vector<int> >::iterator it = fitnv.begin(); it != fitnv.end(); ++it) 
 			obj_sum += it->first;
-
-		for (map<int, std::vector<int> >::iterator it = fitnv.begin(); it != fitnv.end(); ++it) {
-			prob = it->first/obj_sum;
+		// cout << obj_sum;
+		for (multimap<int, std::vector<int> >::iterator it = fitnv.begin(); it != fitnv.end(); ++it) {
+			prob =  ((double)(it->first)/obj_sum);
+			// cout << prob << endl;
 			if (it == fitnv.begin()) {
 				wheel.push_back(prob);
 			} else {
 				wheel.push_back(wheel.back() + prob);
 			}
+			// cout << wheel.back() << endl;
 		}
-
-		for (size_t i = 0; i < (fitnv.size() * ggap); ++i) {
+		int j;
+		for (size_t i = 0; i < floor(fitnv.size() * ggap); ++i) {
 			r_n = (double)rand()/RAND_MAX;
 			// std::vector<double>::iterator it = std::find_if (wheel.begin(), wheel.end(), (*it >= r_n && *it < r_n));
-			std::vector<double>::iterator it;
-			for (it = wheel.begin(); it != wheel.end(); ++it) {
-				if (*it >= r_n && *it < r_n) break;
+			// std::vector<double>::iterator it;
+			int pos = 0;
+			for (std::vector<double>::iterator it = wheel.begin(); it != wheel.end(); ++it, ++pos) {
+				if (it == wheel.begin()) {
+					if (r_n < *it) break;
+				} else {
+					if (r_n >= *(it - 1) && r_n < *it) {
+						break;
+					}
+				}
 			}
-			int pos = it - wheel.begin();
-			int j = 0;
-			for (map<int, std::vector<int> >::iterator map_it = fitnv.begin(); map_it != fitnv.end(); ++map_it, ++j) {
+
+			j = 0;
+			for (multimap<int, std::vector<int> >::iterator map_it = fitnv.begin(); map_it != fitnv.end(); ++map_it, ++j) {
 				if (pos == j) {
 					selch.push_back(map_it->second);
 					break;
 				}
 			}
 		}
+
 		return selch;
 	}
 
@@ -173,8 +191,13 @@ public:
 		return selch;
 	}
 
-	std::vector<std::vector<int> > Reinsert(std::vector<std::vector<int> > &chrom, std::vector<std::vector<int> > &selch) {
-		return chrom;
+	std::vector<std::vector<int> > Reinsert(std::vector<std::vector<int> > &chrom, std::vector<std::vector<int> > &selch, multimap<int, std::vector<int> > &fitnv) {
+		int reins_size = (int)(chrom.size() - selch.size());
+		multimap<int, std::vector<int> >::iterator it = fitnv.begin();
+		for (int i = 0; i < reins_size; ++i, ++it) {
+			selch.push_back(it->second);
+		}
+		return selch;
 	}
 
 private: 
@@ -183,25 +206,3 @@ private:
 	float xovr;
 	float mutr;
 };
-
-int main(int argc, char const *argv[])
-{
-	srand((unsigned)time(NULL)); 
-	RCPSP_GA ga(10, 0.9, 0.8, 0.6);
-	std::vector<std::vector<int> > vec = ga.Initiate(10, 10);
-	// for (size_t i = 0; i < vec.size(); ++i) {
-	// 	for (size_t j = 0; j < vec[i].size(); ++j)
-	// 		cout << vec[i][j] << '\t';
-	// 	cout << endl;
-	// }
-	// cout << endl;
-	
-	std::vector<std::vector<int> > selch = ga.Crossover(vec, 10, 0.8);
-	// for (size_t i = 0; i < selch.size(); ++i) {
-	// 	for (size_t j = 0; j < selch[i].size(); ++j)
-	// 		cout << selch[i][j] << '\t';
-	// 	cout << endl;
-	// }
-
-	return 0;
-}
